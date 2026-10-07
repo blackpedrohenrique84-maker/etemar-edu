@@ -1,0 +1,22 @@
+:root { --cyan: #00f2ff; --bg: #0d1117; --card: #161b22; --border: #30363d; }
+body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; }
+.layout { display: grid; grid-template-columns: 260px 1fr; height: 100vh; }
+.sidebar { background: var(--card); border-right: 1px solid var(--border); padding: 20px; }
+.conteudo { padding: 40px; overflow-y: auto; }
+.aba { display: none; animation: fadeIn 0.3s; }
+.caixa-texto, .res-input { 
+    width: 100%; background: #010409; border: 1px solid var(--border); 
+    color: white; padding: 15px; border-radius: 8px; margin: 10px 0;
+}
+.btn-acao, .btn-play, .btn-finalizar {
+    background: var(--cyan); color: black; border: none; padding: 12px;
+    border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s;
+}
+.btn-acao:hover { filter: brightness(1.2); }
+.card-plataforma {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 20px; border-radius: 12px; margin-bottom: 15px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.tag { color: var(--cyan); font-size: 11px; text-transform: uppercase; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E.T.E.M.A.R | Plataforma </title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <style>
+        :root {
+            /* PALETA BLUE di cria /  */
+            --bg-dark: #040814; /* Quase preto azulado */
+            --bg-stripe: #070e22; /* Azul noturno para as listras */
+            
+            --blue-deep: #0B2447; /* Azul Profundo ETEMAR */
+            --blue-main: #19376D; /* Azul Principal */
+            --blue-bright: #3b82f6; /* Azul Vibrante para destaques */
+            
+            --pure-black: #000000;
+            --paper-white: #FDFDFD;
+            --off-white: #F4F4F5;
+            
+            --success-green: #1A993D;
+            --error-red: #D91A1A;
+            
+            --border-thick: 4px solid var(--pure-black);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            border-radius: 0 !important; /* Estilo rasgado/brutal */
+        }
+
+        body {
+            /* Fundo escuro com listras diagonais sutis (Vibe Clipe anos 2000) */
+            background-color: var(--bg-dark);
+            background-image: repeating-linear-gradient(
+                -45deg,
+                var(--bg-dark),
+                var(--bg-dark) 10px,
+                var(--bg-stripe) 10px,
+                var(--bg-stripe) 20px
+            );
+            font-family: 'Arial', sans-serif;
+            color: var(--pure-black);
+            margin: 0;
+            padding: 50px 20px;
+        }
+
+        /* O Pôster / Interface de Concurso */
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--paper-white);
+            border: var(--border-thick);
+            box-shadow: 15px 15px 0px var(--blue-main); /* Sombra no Azul Principal */
+            padding: 50px;
+            position: relative;
+        }
+
+        @media (max-width: 650px) {
+            .container { padding: 30px 20px; box-shadow: 8px 8px 0px var(--blue-main); }
+            .timer { position: static !important; display: block; margin-bottom: 20px; width: fit-content; }
+        }
+
+        /* Títulos com Raízes Serifadas misturado com peso */
+        h1.internal-title {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 55px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: -2px;
+            color: var(--pure-black);
+            text-shadow: 3px 3px 0px var(--off-white), 5px 5px 0px var(--blue-bright);
+        }
+
+        .subtitle {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--paper-white);
+            background: var(--pure-black);
+            display: inline-block;
+            padding: 5px 15px;
+            margin-top: -5px;
+            margin-bottom: 40px;
+        }
+
+        h2 { 
+            font-family: 'Arial Black', Impact, sans-serif;
+            font-size: 24px; 
+            text-transform: uppercase;
+            border-bottom: 4px solid var(--pure-black); 
+            padding-bottom: 10px; 
+            margin-top: 0;
+            color: var(--blue-deep);
+        }
+
+        /* Área de Upload / Site de Concurso */
+        .upload-area {
+            display: block;
+            border: 3px dashed var(--pure-black);
+            padding: 40px 20px;
+            text-align: center;
+            background: var(--off-white);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 25px 0;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 18px;
+            color: var(--pure-black);
+            text-transform: uppercase;
+        }
+
+        .upload-area:hover {
+            background-color: var(--blue-main);
+            color: var(--paper-white);
+            border-style: solid;
+        }
+
+        input[type="file"] { display: none; }
+
+        /* Botões Rock / Brutalistas */
+        button {
+            background-color: var(--pure-black);
+            color: var(--paper-white);
+            border: 3px solid var(--pure-black);
+            padding: 20px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 18px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.15s ease-out;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 6px 6px 0px var(--blue-bright);
+        }
+
+        button:hover:not(:disabled) {
+            background-color: var(--blue-main);
+            box-shadow: 8px 8px 0px var(--pure-black);
+            transform: translate(-2px, -2px);
+        }
+
+        button:active:not(:disabled) {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px var(--pure-black);
+        }
+
+        button:disabled { 
+            background-color: #DDD; 
+            color: #888;
+            border-color: #888;
+            box-shadow: none;
+            cursor: not-allowed; 
+        }
+
+        .btn-reforco {
+            background-color: var(--paper-white);
+            color: var(--pure-black);
+            box-shadow: 6px 6px 0px var(--pure-black);
+            display: none;
+        }
+        .btn-reforco:hover:not(:disabled) { 
+            background-color: var(--pure-black);
+            color: var(--paper-white);
+            box-shadow: 8px 8px 0px var(--blue-bright);
+        }
+
+        .seletor-qtd { margin: 30px 0; }
+        
+        .seletor-qtd label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-family: 'Arial Black', sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            color: var(--blue-deep);
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid var(--pure-black);
+            font-size: 24px;
+            font-family: 'Arial Black', sans-serif;
+            background-color: var(--off-white);
+            box-shadow: 4px 4px 0px var(--pure-black);
+            text-align: center;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            background-color: var(--blue-main);
+            color: var(--paper-white);
+        }
+
+        /* QUESTÕES - O NÚCLEO (Raízes Etemar + QConcursos) */
+        .questao-box {
+            margin-bottom: 50px;
+            padding: 40px;
+            border: 2px solid var(--pure-black);
+            background: var(--paper-white);
+            box-shadow: 8px 8px 0px var(--pure-black);
+            position: relative;
+        }
+
+        /* Detalhe de "fita isolante" punk no canto */
+        .questao-box::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 40px;
+            height: 15px;
+            background: var(--pure-black);
+            transform: rotate(-45deg);
+        }
+
+        .header-questao {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #CCC;
+            padding-bottom: 10px;
+        }
+
+        .header-questao span:first-child {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 20px;
+            color: var(--blue-deep);
+        }
+
+        .tag-tema {
+            background: var(--blue-main);
+            color: var(--paper-white);
+            padding: 4px 10px;
+            font-size: 12px;
+            font-family: 'Arial Black', sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* Enunciado clássico, fonte com serifa para leitura focada */
+        .enunciado { 
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 20px; 
+            text-align: justify; 
+            margin-bottom: 30px; 
+            line-height: 1.5;
+        }
+
+        /* Alternativas - Dinâmicas e agressivas no hover */
+        .opcao-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+            padding: 15px 20px;
+            border: 2px solid var(--pure-black);
+            background: var(--off-white);
+            transition: all 0.15s ease;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .opcao-label:hover { 
+            background: var(--pure-black); 
+            color: var(--paper-white); 
+            border-color: var(--blue-bright);
+            border-left: 8px solid var(--blue-bright); /* Efeito punk em azul */
+            transform: translateX(5px);
+        }
+        
+        .opcao-label input { 
+            margin-right: 15px; 
+            transform: scale(1.4); 
+            accent-color: var(--blue-main);
+        }
+
+        /* Explicação do Tutor */
+        .explicacao {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            border-left: 6px solid var(--blue-main);
+            background-color: #EBF1FA; /* Azul super claro */
+            font-size: 16px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .dica-tutor {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--pure-black);
+            color: var(--paper-white);
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        /* Boletim Final */
+        .boletim {
+            text-align: center;
+            background: var(--pure-black);
+            color: var(--paper-white);
+            padding: 50px 40px;
+            border: var(--border-thick);
+            box-shadow: 12px 12px 0px var(--blue-bright);
+            margin-top: 50px;
+        }
+
+        .boletim h2 {
+            color: var(--blue-bright);
+            border: none;
+            font-size: 36px;
+        }
+
+        /* Timer Digital Punk */
+        .timer {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 26px;
+            background: var(--pure-black);
+            color: var(--blue-bright);
+            padding: 10px 20px;
+            border: 3px solid var(--blue-bright);
+            box-shadow: 5px 5px 0px var(--pure-black);
+            display: none;
+        }
+
+        .status-text {
+            margin-top: 20px; 
+            font-family: 'Arial Black', sans-serif;
+            text-transform: uppercase;
+            font-size: 16px;
+            color: var(--blue-main);
+            text-align: center;
+        }
+
+        .blink { animation: blinker 1s infinite steps(2, start); }
+        @keyframes blinker { to { visibility: hidden; } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="timer" id="timer">00:00</div>
+        
+        <h1 class="internal-title">E.T.E.M.A.R</h1>
+        <div class="subtitle">em desenvolvimento</div>
+        
+        <!-- PAINEL DE UPLOAD -->
+        <div id="painel-upload">
+            <h2>Plataforma de Ensino </h2>
+            <p style="font-family: 'Times New Roman', serif; font-size: 18px; font-weight: bold; color: #333;">
+                Anexe a base de conhecimento. O sistema irá varrer suas deficiências e montar a avaliação.
+            </p>
+            
+            <label class="upload-area" id="drop-area">
+                <span style="font-size: 30px; display: block; margin-bottom: 5px;">📄</span>
+                <span id="file-name">INSERIR ARQUIVO PDF</span>
+                <input type="file" id="arquivoPDF" accept="application/pdf">
+            </label>
+
+            <div class="seletor-qtd">
+                <label for="qtdQuestoes">NÚMERO DE QUESTÕES (MÁX 20):</label>
+                <input type="number" id="qtdQuestoes" min="1" max="20" value="5" 
+                       oninput="if(this.value > 20) this.value = 20; if(this.value < 1 && this.value !== '') this.value = 1;">
+            </div>
+
+            <button type="button" onclick="gerarSimulado(false)" id="btnProcessar" disabled>GERAR SIMULADO</button>
+            <div id="status" class="status-text blink" style="display: none;"></div>
+        </div>
+
+        <!-- PAINEL DA PROVA -->
+        <div id="painel-prova" style="display: none;">
+            <h2 id="titulo-prova" style="font-size: 26px; margin-bottom: 40px;"></h2>
+            <div id="area-questoes"></div>
+            
+            <button type="button" onclick="corrigirSimulado()" style="background: var(--blue-main); font-size: 22px; padding: 25px; box-shadow: 8px 8px 0px var(--pure-black);">ENTREGAR GABARITO</button>
+        </div>
+
+        <!-- PAINEL DE RESULTADO -->
+        <div id="painel-resultado" class="boletim" style="display: none;">
+            <h2>RESULTADO FINAL</h2>
+            <h1 id="nota-final" style="font-size: 100px; margin: 10px 0; font-family: 'Arial Black', sans-serif;"></h1>
+            <p style="font-size: 16px; margin-bottom: 40px; font-family: 'Arial', sans-serif; text-transform: uppercase;">Revise as lacunas nas resoluções do tutor acima.</p>
+            
+            <button type="button" onclick="location.reload()" style="background-color: var(--paper-white); color: var(--pure-black); width: auto; margin-right: 15px;">NOVO ARQUIVO</button>
+            <button type="button" id="btnReforco" class="btn-reforco" onclick="gerarSimulado(true)" style="width: auto;">MODO REFORÇO CRÍTICO</button>
+        </div>
+    </div>
+
+    <script>
+        let simuladoAtual = null;
+        let textoExtraido = ""; 
+        let tempoSegundos = 0;
+        let intervaloTimer = null;
+
+        document.getElementById('arquivoPDF').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || "INSERIR ARQUIVO PDF";
+            document.getElementById('file-name').innerText = fileName.toUpperCase();
+            document.getElementById('btnProcessar').disabled = !e.target.files.length;
+        });
+
+        function formatarTempo(segundos) {
+            const min = Math.floor(segundos / 60).toString().padStart(2, '0');
+            const seg = (segundos % 60).toString().padStart(2, '0');
+            return `${min}:${seg}`;
+        }
+
+        async function extrairTextoPDF(arquivo) {
+            if (typeof pdfjsLib === 'undefined') throw new Error("Biblioteca PDF.js offline.");
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+            
+            const arrayBuffer = await arquivo.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({data: new Uint8Array(arrayBuffer)}).promise;
+            let texto = "";
+            const limitPages = Math.min(pdf.numPages, 8); 
+            
+            for(let i=1; i<=limitPages; i++) {
+                const pg = await pdf.getPage(i);
+                const ct = await pg.getTextContent();
+                texto += ct.items.map(s=>s.str).join(" ") + " ";
+            }
+            return texto;
+        }
+
+        async function gerarSimulado(isReforco = false) {
+            const btn = document.getElementById('btnProcessar');
+            const status = document.getElementById('status');
+            
+            let qtdInput = document.getElementById('qtdQuestoes').value;
+            let quantidade = Math.min(Math.max(parseInt(qtdInput) || 5, 1), 20); 
+            
+            document.getElementById('painel-resultado').style.display = 'none';
+            document.getElementById('painel-upload').style.display = 'none';
+            status.style.display = 'block';
+            
+            if(!isReforco) {
+                const arquivo = document.getElementById('arquivoPDF').files[0];
+                status.innerText = "EXTRAINDO DADOS...";
+                
+                try {
+                    textoExtraido = await extrairTextoPDF(arquivo);
+                } catch(e) {
+                    status.innerText = "ERRO: " + e.message;
+                    status.classList.remove('blink');
+                    document.getElementById('painel-upload').style.display = 'block';
+                    return;
+                }
+            }
+
+            status.innerText = isReforco 
+                ? "CRUZANDO ERROS RECENTES. GERANDO PROVA DE CHOQUE..." 
+                : `PROCESSANDO ${quantidade} QUESTÕES (AGUARDE)...`;
+
+            try {
+                const req = await fetch("http://127.0.0.1:3000/api/simulado", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        texto: textoExtraido, 
+                        reforco: isReforco,
+                        quantidade: quantidade
+                    })
+                });
+
+                if (!req.ok) throw new Error("A IA excedeu o tempo limite.");
+                
+                const dados = await req.json();
+                montarProva(dados);
+
+            } catch(e) {
+                status.innerText = "FALHA: " + e.message;
+                status.classList.remove('blink');
+                document.getElementById('painel-upload').style.display = 'block';
+            } 
+        }
+
+        function normalizarOpcoes(opcoes) {
+            if (Array.isArray(opcoes)) return opcoes;
+            if (typeof opcoes !== "string") return [];
+
+            const texto = opcoes.trim();
+            try {
+                const opcoesParseadas = JSON.parse(texto);
+                if (Array.isArray(opcoesParseadas)) return opcoesParseadas;
+            } catch {
+            }
+
+            return texto.split(/\s+(?=[A-E][).]\s)/).filter(Boolean);
+        }
+
+        function montarProva(dados) {
+            simuladoAtual = dados;
+            document.getElementById('status').style.display = 'none';
+            document.getElementById('painel-prova').style.display = 'block';
+            
+            document.getElementById('titulo-prova').innerText = dados.titulo || "SIMULADO TÁTICO";
+            
+            tempoSegundos = 0;
+            document.getElementById('timer').style.display = 'block';
+            clearInterval(intervaloTimer);
+            intervaloTimer = setInterval(() => {
+                tempoSegundos++;
+                document.getElementById('timer').innerText = formatarTempo(tempoSegundos);
+            }, 1000);
+
+            let html = "";
+            
+            if (!dados.questoes || dados.questoes.length === 0) {
+                document.getElementById('area-questoes').innerHTML = "<p>Erro na compilação.</p>";
+                return;
+            }
+
+            dados.questoes.forEach((q, i) => {
+                let opcoesArray = normalizarOpcoes(q.opcoes);
+                if (!opcoesArray.length) {
+                    opcoesArray = ["A) -", "B) -", "C) -", "D) -", "E) -"];
+                }
+                
+                let opcoesHtml = opcoesArray.map((op, idx) => {
+                    let prefix = op.substring(0,2).includes(")") ? op.substring(0,2) : String.fromCharCode(65+idx)+")";
+                    let text = op.substring(0,2).includes(")") ? op.substring(2) : op;
+                    
+                    return `
+                    <label class="opcao-label" id="label-q${i}-op${idx}">
+                        <input type="radio" name="q${i}" value="${idx}"> 
+                        <span><strong style="margin-right:5px; font-family:'Arial Black';">${prefix}</strong> ${text}</span>
+                    </label>
+                    `;
+                }).join('');
+
+                let temaSeguro = q.tema_especifico && q.tema_especifico !== "undefined" ? q.tema_especifico : "GERAL";
+                let explicacaoSegura = q.explicacao && q.explicacao !== "undefined" ? q.explicacao.replace(/\n/g, '<br>') : "Análise ausente.";
+                let dicaSegura = q.dica_tutor && q.dica_tutor !== "undefined" ? q.dica_tutor : "Leia com atenção.";
+
+                html += `
+                    <div class="questao-box">
+                        <div class="header-questao">
+                            <span>Q.${i+1}</span>
+                            <span class="tag-tema">${temaSeguro}</span>
+                        </div>
+                        <div class="enunciado">${(q.pergunta || "Dados insuficientes.").replace(/\n/g, '<br>')}</div>
+                        ${opcoesHtml}
+                        <div class="explicacao" id="exp-q${i}">
+                            <strong style="font-family:'Arial Black'; text-transform:uppercase; color:var(--blue-main);">ANÁLISE E RESOLUÇÃO:</strong><br><br>${explicacaoSegura}
+                            <div class="dica-tutor">📌 MACETE: ${dicaSegura}</div>
+                        </div>
+                    </div>`;
+            });
+
+            document.getElementById('area-questoes').innerHTML = html;
+            window.scrollTo(0, 0);
+        }
+
+        function corrigirSimulado() {
+            clearInterval(intervaloTimer);
+            let acertos = 0;
+            const total = simuladoAtual.questoes.length;
+            
+            let temasCertos =[];
+            let temasErrados =[];
+
+            simuladoAtual.questoes.forEach((q, i) => {
+                const marcado = document.querySelector(`input[name="q${i}"]:checked`);
+                const divQuestao = document.querySelectorAll('.questao-box')[i];
+                const divExp = document.getElementById(`exp-q${i}`);
+                
+                divExp.style.display = "block"; 
+
+                // Feedback: Verde para acerto, Vermelho para erro (Mantido por ser padrão universal)
+                if (marcado && parseInt(marcado.value) === q.correta) {
+                    acertos++;
+                    temasCertos.push(q.tema_especifico);
+                    divQuestao.style.borderColor = "var(--success-green)";
+                    divQuestao.style.boxShadow = "8px 8px 0px var(--success-green)";
+                } else {
+                    temasErrados.push(q.tema_especifico);
+                    divQuestao.style.borderColor = "var(--error-red)";
+                    divQuestao.style.boxShadow = "8px 8px 0px var(--error-red)";
+                    if (marcado) {
+                        const labelMarcada = document.getElementById(`label-q${i}-op${marcado.value}`);
+                        labelMarcada.style.color = "var(--paper-white)";
+                        labelMarcada.style.backgroundColor = "var(--error-red)";
+                        labelMarcada.style.borderColor = "var(--pure-black)";
+                        labelMarcada.style.textDecoration = "line-through";
+                    }
+                }
+                
+                const labelCorreta = document.getElementById(`label-q${i}-op${q.correta}`);
+                if(labelCorreta) {
+                    labelCorreta.style.color = "var(--paper-white)";
+                    labelCorreta.style.backgroundColor = "var(--pure-black)"; /* Acerto fica preto com letra branca */
+                    labelCorreta.style.borderColor = "var(--pure-black)";
+                }
+                
+                document.getElementsByName(`q${i}`).forEach(opt => opt.disabled = true);
+            });
+
+            fetch("http://127.0.0.1:3000/api/resultado", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({temas_certos: temasCertos, temas_errados: temasErrados})
+            }).catch(e => console.error("Falha no banco de dados", e));
+
+            document.getElementById('painel-resultado').style.display = 'block';
+            document.getElementById('nota-final').innerText = `${acertos} / ${total}`;
+            
+            const btnReforco = document.getElementById('btnReforco');
+            if(temasErrados.length > 0) {
+                btnReforco.style.display = "inline-block";
+            } else {
+                btnReforco.style.display = "none";
+            }
+
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
