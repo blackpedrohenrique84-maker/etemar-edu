@@ -171,4 +171,4 @@ async def gerar_simulado(req: RequisicaoSimulado, db: Session = Depends(get_db))
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("server:app", host="0.0.0.0", port=3000, reload=True)
+    uvicorn.run("server:app", host="0.0.0.0", port=3002, reload=True)

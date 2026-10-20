@@ -463,7 +463,7 @@
                 : `PROCESSANDO ${quantidade} QUESTÕES (AGUARDE)...`;
 
             try {
-                const req = await fetch("http://127.0.0.1:3000/api/simulado", {
+                const req = await fetch("http://127.0.0.1:3002/api/simulado", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify({
@@ -606,7 +606,7 @@
                 document.getElementsByName(`q${i}`).forEach(opt => opt.disabled = true);
             });
 
-            fetch("http://127.0.0.1:3000/api/resultado", {
+            fetch("http://127.0.0.1:3002/api/resultado", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({temas_certos: temasCertos, temas_errados: temasErrados})
